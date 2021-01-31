@@ -56,6 +56,7 @@ const configuration_workflow = () =>
                     fields: [{
                             name: "expand_view",
                             label: "Expand View",
+                            sublabel: "(Under construction) Leave blank to have no link to expand view",
                             type: "String",
                             required: false,
                             attributes: {
@@ -65,27 +66,38 @@ const configuration_workflow = () =>
                         {
                             name: "view_to_create",
                             label: "Use view to create",
-                            sublabel: "Leave blank to have no link to create a new item",
+                            sublabel: "(Under construction) Leave blank to have no link to create a new item",
+                            required: false,
                             type: "String",
                             attributes: {
                                 options: create_view_opts.join(),
                             },
                         },
-                        /*
-                                      {
-                                        name: "id_field",
-                                        label: "Id field",
-                                        type: "String",
-                                        sublabel: "Task Id label",
-                                        required: true,
-                                        attributes: {
-                                          options: fields
-                                            .filter((f) => f.type.name === "String")
-                                            .map((f) => f.name)
-                                            .join(),
-                                        },
-                                      },
-                        */
+                        {
+                            name: "gantt_view_mode",
+                            label: "Gantt view mode",
+                            sublabel: "Choose gantt view mode (Month is default)",
+                            required: false,
+                            type: "String",
+                            attributes: {
+                                options: "Month,Quarter Day,Half Day,Day,Week",
+                            },
+                        },
+/*
+                        {
+                          name: "id_field",
+                          label: "Id field",
+                          type: "String",
+                          sublabel: "Task Id label",
+                          required: true,
+                          attributes: {
+                            options: fields
+                              .filter((f) => f.type.name === "Integer")
+                              .map((f) => f.name)
+                              .join(),
+                          },
+                        },
+*/
                         {
                             name: "title_field",
                             label: "Title field",
@@ -101,7 +113,7 @@ const configuration_workflow = () =>
                         },
                         {
                             name: "start_field",
-                            label: "Start time field",
+                            label: "Start date field",
                             type: "String",
                             sublabel: "The table needs a fields of type 'Date' to track start times.",
                             required: true,
@@ -114,7 +126,7 @@ const configuration_workflow = () =>
                         },
                         {
                             name: "end_field",
-                            label: "End time field",
+                            label: "End date field",
                             type: "String",
                             sublabel: "The table needs a fields of type 'Date' to track end times.",
                             required: true,
@@ -129,7 +141,7 @@ const configuration_workflow = () =>
                             name: "milestone_field",
                             label: "Milestone field",
                             type: "String",
-                            sublabel: "The table can supply a fields of type 'Bool' to mark task as milestone.",
+                            sublabel: "(Under construction) The table can supply a fields of type 'Bool' to mark task as milestone.",
                             required: false,
                             attributes: {
                                 options: [
@@ -144,29 +156,17 @@ const configuration_workflow = () =>
                             name: "progress_field",
                             label: "Progress field",
                             type: "String",
-                            sublabel: "A fields of type 'Int' or 'Float' to denote progress.",
+                            sublabel: "A fields of type 'Integer' or 'Float' to denote progress.",
                             required: false,
                             attributes: {
                                 options: fields
                                     .filter(
-                                        (f) => f.type.name === "Int" || f.type.name === "Float"
+                                        (f) => f.type.name === "Integer" || f.type.name === "Float"
                                     )
                                     .map((f) => f.name)
                                     .join(),
                             },
                         },
-                        /*
-                                      {
-                                        name: "duration_units",
-                                        label: "Duration units",
-                                        type: "String",
-                                        sublabel: "Units of duration field",
-                                        required: true,
-                                        attributes: {
-                                          options: "Seconds,Minutes,Hours,Days",
-                                        },
-                                      },
-                        */
                     ],
                 });
             },
@@ -186,14 +186,13 @@ const run = async(
     viewname, {
         view_to_create,
         expand_view,
+	gantt_view_mode,
+//tbd        id_field,
         title_field,
         start_field,
         end_field,
         milestone_field,
         progress_field,
-        //    allday_field,
-        //    duration_field,
-        //    duration_units,
     },
     state,
     extraArgs
@@ -204,38 +203,40 @@ const run = async(
     const qstate = await stateFieldsToWhere({ fields, state });
     const rows = await table.getRows(qstate);
     const id = `cal${Math.round(Math.random() * 100000)}`;
+    const gantt_view_mode_val = gantt_view_mode ? gantt_view_mode : 'Month';
 
     // defines Tasks List 
     const tasks = rows.map((row) => {
         //const url = expand_view ? `/view/${expand_view}?id=${row.id}` : undefined;
-        const custom_class = milestone_field ? 'bar-milestone' : undefined;
-        return { title: row[title_field], start: row[start_field], end: row[end_field], progress: row[progress_field], custom_class };
+        //console.log(row);
+        // TBD for links const id = row[id_field];
+        const name = row[title_field];
+	const start = new Date(row[start_field]).toISOString();
+	const end = new Date(row[end_field]).toISOString();
+
+        const custom_class = undefined;
+/* TBD i need idea how add bar-milestone to css
+    if ( typeof row[milestone_field] !== "undefined" ) {
+        if( row[milestone_field] !== null  && row[milestone_field]) { custom_class = 'bar-milestone'; }
+      }
+ */
+        return { name , start, end, progress: row[progress_field], custom_class };
     });
     return div(
+        div(    {
+      id: "gantt_chart_id",
+      class: "gantt-target",
+    }
+),
         script(
             domReady(`
-  var ganttEl = document.getElementById('${id}');
-  var gantt = new Gantt(ganttEl, tasks, {
-
-            on_click: function(task) {
-                console.log(task);
-            },
-            on_date_change: function(task, start, end) {
-                console.log(task, start, end);
-            },
-            on_progress_change: function(task, progress) {
-                console.log(task, progress);
-            },
-            on_view_change: function(mode) {
-                console.log(mode);
-            },
-            view_mode: 'Month',
-            language: 'en'
-        });
-        console.log(gantt_chart);
-  gantt.render();`)
-        ),
-        div({ id })
+  var tasksJson = ${JSON.stringify(tasks)};
+  var gantt = new Gantt(".gantt-target", tasksJson, {
+//doesnt work	view_modes: ['Quarter Day', 'Half Day', 'Day', 'Week', 'Month'],
+	view_mode: '${gantt_view_mode_val}'
+  });
+`)
+        )
     );
 };
 
