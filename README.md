@@ -1,5 +1,5 @@
 # saltcorn-gantt
-Gantt View plugin for Saltcorn.
+Gantt View plugin for [Saltcorn](https://saltcorn.com/) Modern NoCode platform.
 
 ![Gantt View](https://user-images.githubusercontent.com/327030/106425774-731a8080-6475-11eb-82ae-76a892c16e94.png)
 
@@ -9,6 +9,9 @@ Currently implemented only readonly view.
 
 ## Author
 AlexanderSokolov
+
+## Plugin for
+https://saltcorn.com/
 
 ## Based on
 https://frappe.io/gantt

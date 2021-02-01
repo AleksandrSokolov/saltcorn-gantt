@@ -1,12 +1,25 @@
 {
-  "name": "@saltcorn/saltcorn-gantt",
-  "version": "0.1.0",
-  "description": "Gantt view plugin",
+  "name": "saltcorn-gantt",
+  "version": "0.1.1",
+  "description": "Gantt view plugin for Saltcorn NoCode Platform",
   "main": "index.js",
+  "homepage":"https://github.com/AleksandrSokolov/saltcorn-gantt",
   "dependencies": {
     "@saltcorn/markup": "^0.2.0",
     "@saltcorn/data": "^0.2.0"
   },
   "author": "Aleksandr Sokolov",
-  "license": "MIT"
+  "license": "MIT",
+  "bugs": { 
+   	"url" : "https://github.com/AleksandrSokolov/saltcorn-gantt/issues"
+	},
+  "repository": {
+  	"type" : "git",
+	"url" : "https://github.com/AleksandrSokolov/saltcorn-gantt.git"
+	},
+  "keywords": [
+    "saltcorn",
+    "nocode",
+    "node.js"
+  ]
 }
