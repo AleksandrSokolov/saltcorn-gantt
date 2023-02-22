@@ -1,11 +1,11 @@
 {
   "name": "@saltcorn/saltcorn-gantt",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Gantt view plugin",
   "main": "index.js",
   "dependencies": {
     "@saltcorn/markup": "^0.5.0",
-    "@saltcorn/data": "^0.4.0"
+    "@saltcorn/data": "^0.5.0"
   },
   "author": "Aleksandr Sokolov",
   "license": "MIT"
