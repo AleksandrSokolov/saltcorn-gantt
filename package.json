@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "@saltcorn/markup": "^0.5.0",
-    "@saltcorn/data": "^0.5.0"
+    "@saltcorn/data": "^0.6.4"
   },
   "author": "Aleksandr Sokolov",
   "license": "MIT"
